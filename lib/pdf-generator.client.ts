@@ -1,15 +1,19 @@
 // This file creates printable HTML documents that open in a new window
 // No external PDF libraries required - uses browser's native print functionality
 
-import { format } from 'date-fns'
-import type { LostItem, HotelSettings } from './types'
-import { STATUS_LABELS } from './constants'
+import { format } from "date-fns";
+import type { LostItem, HotelSettings } from "./types";
+import { STATUS_LABELS } from "./constants";
 
-function createPrintWindow(title: string, content: string, settings: HotelSettings): void {
-  const printWindow = window.open('', '_blank')
+function createPrintWindow(
+  title: string,
+  content: string,
+  settings: HotelSettings,
+): void {
+  const printWindow = window.open("", "_blank");
   if (!printWindow) {
-    alert('Please allow popups for this site to print')
-    return
+    alert("Please allow popups for this site to print");
+    return;
   }
 
   const html = `
@@ -63,13 +67,14 @@ function createPrintWindow(title: string, content: string, settings: HotelSettin
       align-items: center;
       margin-bottom: 12px;
       padding: 8px;
-      background: #f5f5f5;
+      
+      background: #2e304c;
       border-radius: 4px;
     }
     .code {
       font-size: 13px;
       font-weight: bold;
-      color: #403a60;
+      color: #ffffff;
     }
     .status {
       padding: 3px 10px;
@@ -164,7 +169,7 @@ function createPrintWindow(title: string, content: string, settings: HotelSettin
 </head>
 <body>
   <div class="header">
-    ${settings.logo ? `<img src="${settings.logo}" alt="${settings.hotelName}" class="logo" />` : ''}
+    ${settings.logo ? `<img src="${settings.logo}" alt="${settings.hotelName}" class="logo" />` : ""}
     <div class="hotel-name">${settings.hotelName}</div>
     <div class="document-title">${title}</div>
   </div>
@@ -172,10 +177,10 @@ function createPrintWindow(title: string, content: string, settings: HotelSettin
   ${content}
   
   <div class="footer">
-    <div>${settings.hotelAddress || ''}</div>
-    <div>${[settings.hotelPhone ? `Phone: ${settings.hotelPhone}` : '', settings.hotelEmail ? `Email: ${settings.hotelEmail}` : ''].filter(Boolean).join(' | ')}</div>
-    ${settings.hotelWebsite ? `<div>${settings.hotelWebsite}</div>` : ''}
-    <div class="print-date">Printed: ${format(new Date(), 'MMMM dd, yyyy HH:mm')}</div>
+    <div>${settings.hotelAddress || ""}</div>
+    <div>${[settings.hotelPhone ? `Phone: ${settings.hotelPhone}` : "", settings.hotelEmail ? `Email: ${settings.hotelEmail}` : ""].filter(Boolean).join(" | ")}</div>
+    ${settings.hotelWebsite ? `<div>${settings.hotelWebsite}</div>` : ""}
+    <div class="print-date">Printed: ${format(new Date(), "MMMM dd, yyyy HH:mm")}</div>
   </div>
   
   <script>
@@ -185,60 +190,63 @@ function createPrintWindow(title: string, content: string, settings: HotelSettin
   </script>
 </body>
 </html>
-  `
+  `;
 
-  printWindow.document.write(html)
-  printWindow.document.close()
+  printWindow.document.write(html);
+  printWindow.document.close();
 }
 
-export async function generateItemPDF(item: LostItem, settings: HotelSettings): Promise<void> {
-  const dispatchDeadline = new Date(item.dateFound)
-  dispatchDeadline.setDate(dispatchDeadline.getDate() + item.dispatchDuration)
+export async function generateItemPDF(
+  item: LostItem,
+  settings: HotelSettings,
+): Promise<void> {
+  const dispatchDeadline = new Date(item.dateFound);
+  dispatchDeadline.setDate(dispatchDeadline.getDate() + item.dispatchDuration);
 
-  let statusSpecificContent = ''
+  let statusSpecificContent = "";
 
-  if (item.status === 'handed_over' && item.handoverDate) {
+  if (item.status === "handed_over" && item.handoverDate) {
     statusSpecificContent = `
       <div class="section">
         <div class="section-title">Handover Information</div>
         <div class="fields-grid">
           <div class="field">
             <span class="field-label">Handover Date:</span>
-            <span class="field-value">${format(new Date(item.handoverDate), 'MMM dd, yyyy HH:mm')}</span>
+            <span class="field-value">${format(new Date(item.handoverDate), "MMM dd, yyyy HH:mm")}</span>
           </div>
           <div class="field">
             <span class="field-label">Handed Over By:</span>
-            <span class="field-value">${item.handoverBy || 'N/A'}</span>
+            <span class="field-value">${item.handoverBy || "N/A"}</span>
           </div>
           <div class="field">
             <span class="field-label">Receiver Name:</span>
-            <span class="field-value">${item.handoverReceiverName || 'N/A'}</span>
+            <span class="field-value">${item.handoverReceiverName || "N/A"}</span>
           </div>
           <div class="field">
             <span class="field-label">Contact Number:</span>
-            <span class="field-value">${item.handoverContactNumber || 'N/A'}</span>
+            <span class="field-value">${item.handoverContactNumber || "N/A"}</span>
           </div>
         </div>
       </div>
-    `
+    `;
   }
 
-  if (item.status === 'dispatched' && item.dispatchDate) {
+  if (item.status === "dispatched" && item.dispatchDate) {
     statusSpecificContent = `
       <div class="section">
         <div class="section-title">Dispatch Information</div>
         <div class="fields-grid">
           <div class="field">
             <span class="field-label">Dispatch Date:</span>
-            <span class="field-value">${format(new Date(item.dispatchDate), 'MMM dd, yyyy HH:mm')}</span>
+            <span class="field-value">${format(new Date(item.dispatchDate), "MMM dd, yyyy HH:mm")}</span>
           </div>
           <div class="field">
             <span class="field-label">Dispatched By:</span>
-            <span class="field-value">${item.dispatchBy || 'N/A'}</span>
+            <span class="field-value">${item.dispatchBy || "N/A"}</span>
           </div>
         </div>
       </div>
-    `
+    `;
   }
 
   const content = `
@@ -252,7 +260,7 @@ export async function generateItemPDF(item: LostItem, settings: HotelSettings): 
       <div class="fields-grid">
         <div class="field">
           <span class="field-label">Date Found:</span>
-          <span class="field-value">${format(new Date(item.dateFound), 'MMM dd, yyyy')}</span>
+          <span class="field-value">${format(new Date(item.dateFound), "MMM dd, yyyy")}</span>
         </div>
         <div class="field">
           <span class="field-label">Category:</span>
@@ -260,7 +268,7 @@ export async function generateItemPDF(item: LostItem, settings: HotelSettings): 
         </div>
         <div class="field">
           <span class="field-label">Location Found:</span>
-          <span class="field-value">${item.location === 'Room' ? `Room ${item.roomNumber}` : item.location}</span>
+          <span class="field-value">${item.location === "Room" ? `Room ${item.roomNumber}` : item.location}</span>
         </div>
         <div class="field">
           <span class="field-label">Store Location:</span>
@@ -272,7 +280,7 @@ export async function generateItemPDF(item: LostItem, settings: HotelSettings): 
         </div>
         <div class="field">
           <span class="field-label">Guest Name:</span>
-          <span class="field-value">${item.guestName || 'N/A'}</span>
+          <span class="field-value">${item.guestName || "N/A"}</span>
         </div>
         <div class="field">
           <span class="field-label">Finder Name:</span>
@@ -284,18 +292,21 @@ export async function generateItemPDF(item: LostItem, settings: HotelSettings): 
         </div>
         <div class="field">
           <span class="field-label">Dispatch Deadline:</span>
-          <span class="field-value">${format(dispatchDeadline, 'MMM dd, yyyy')}</span>
+          <span class="field-value">${format(dispatchDeadline, "MMM dd, yyyy")}</span>
         </div>
       </div>
     </div>
     
     ${statusSpecificContent}
-  `
+  `;
 
-  createPrintWindow('Lost & Found Item Report', content, settings)
+  createPrintWindow("Lost & Found Item Report", content, settings);
 }
 
-export async function generateHandoverPDF(item: LostItem, settings: HotelSettings): Promise<void> {
+export async function generateHandoverPDF(
+  item: LostItem,
+  settings: HotelSettings,
+): Promise<void> {
   const content = `
     <div class="item-code">
       <span class="code">Item Code: ${item.code}</span>
@@ -307,7 +318,7 @@ export async function generateHandoverPDF(item: LostItem, settings: HotelSetting
       <div class="fields-grid">
         <div class="field">
           <span class="field-label">Date Found:</span>
-          <span class="field-value">${format(new Date(item.dateFound), 'MMM dd, yyyy')}</span>
+          <span class="field-value">${format(new Date(item.dateFound), "MMM dd, yyyy")}</span>
         </div>
         <div class="field">
           <span class="field-label">Category:</span>
@@ -319,11 +330,11 @@ export async function generateHandoverPDF(item: LostItem, settings: HotelSetting
         </div>
         <div class="field">
           <span class="field-label">Location Found:</span>
-          <span class="field-value">${item.location === 'Room' ? `Room ${item.roomNumber}` : item.location}</span>
+          <span class="field-value">${item.location === "Room" ? `Room ${item.roomNumber}` : item.location}</span>
         </div>
         <div class="field">
           <span class="field-label">Guest Name:</span>
-          <span class="field-value">${item.guestName || 'N/A'}</span>
+          <span class="field-value">${item.guestName || "N/A"}</span>
         </div>
       </div>
     </div>
@@ -333,19 +344,19 @@ export async function generateHandoverPDF(item: LostItem, settings: HotelSetting
       <div class="fields-grid">
         <div class="field">
           <span class="field-label">Handover Date:</span>
-          <span class="field-value">${item.handoverDate ? format(new Date(item.handoverDate), 'MMM dd, yyyy HH:mm') : 'N/A'}</span>
+          <span class="field-value">${item.handoverDate ? format(new Date(item.handoverDate), "MMM dd, yyyy HH:mm") : "N/A"}</span>
         </div>
         <div class="field">
           <span class="field-label">Handed Over By:</span>
-          <span class="field-value">${item.handoverBy || 'N/A'}</span>
+          <span class="field-value">${item.handoverBy || "N/A"}</span>
         </div>
         <div class="field">
           <span class="field-label">Receiver Name:</span>
-          <span class="field-value">${item.handoverReceiverName || 'N/A'}</span>
+          <span class="field-value">${item.handoverReceiverName || "N/A"}</span>
         </div>
         <div class="field">
           <span class="field-label">Contact Number:</span>
-          <span class="field-value">${item.handoverContactNumber || 'N/A'}</span>
+          <span class="field-value">${item.handoverContactNumber || "N/A"}</span>
         </div>
       </div>
     </div>
@@ -353,24 +364,24 @@ export async function generateHandoverPDF(item: LostItem, settings: HotelSetting
     <div class="signature-section">
       <div class="section-title">Guest Acknowledgment</div>
       <div class="acknowledgment">
-        I acknowledge that I have received the above-mentioned item and confirm that it belongs to me.
+        I hereby acknowledge receipt of the above-mentioned item and confirm that it is my personal property. I accept full responsibility upon handover.
       </div>
       <div class="signature-boxes">
         <div class="signature-box">
           <div class="signature-line"></div>
           <div>Guest Signature</div>
-          <div style="margin-top: 5px; font-size: 9px;">Name: ${item.handoverReceiverName || '________________'}</div>
-          <div style="margin-top: 3px; font-size: 9px;">Date: ________________</div>
+          <div style="margin-top: 5px; font-size: 9px;">Name: ${item.handoverReceiverName || "________________________"}</div>
+          <div style="margin-top: 3px; font-size: 9px;">Date: ${format(new Date(), "MMMM dd, yyyy ")}</div>
         </div>
         <div class="signature-box">
           <div class="signature-line"></div>
           <div>Staff Signature</div>
-          <div style="margin-top: 5px; font-size: 9px;">Name: ${item.handoverBy || '________________'}</div>
-          <div style="margin-top: 3px; font-size: 9px;">Date: ________________</div>
+          <div style="margin-top: 5px; font-size: 9px;">Name: ${item.handoverBy || "________________"}</div>
+          <div style="margin-top: 3px; font-size: 9px;">Date: ${format(new Date(), "MMMM dd, yyyy ")}</div>
         </div>
       </div>
     </div>
-  `
+  `;
 
-  createPrintWindow('Lost & Found Handover Form', content, settings)
+  createPrintWindow("Lost & Found Handover Receipt", content, settings);
 }
