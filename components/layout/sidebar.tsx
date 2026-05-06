@@ -84,9 +84,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
             <div className="flex items-center gap-3">
-              <div className="bg-white rounded-lg p-2">
+              <div className=" rounded-lg p-2">
                 <Image
-                  src="/images/warwickhotels.png"
+                  src="/logo.svg"
                   alt="Warwick Hotels"
                   width={120}
                   height={48}

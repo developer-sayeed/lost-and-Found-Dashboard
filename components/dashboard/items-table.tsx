@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { format } from 'date-fns'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,45 +10,53 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Eye, Printer, Edit, Trash2, HandHeart, Package } from 'lucide-react'
-import type { LostItem } from '@/lib/types'
-import { cn } from '@/lib/utils'
+} from "@/components/ui/dropdown-menu";
+import {
+  MoreHorizontal,
+  Eye,
+  Printer,
+  Edit,
+  Trash2,
+  HandHeart,
+  Package,
+} from "lucide-react";
+import type { LostItem } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface ItemsTableProps {
-  items: LostItem[]
-  onView: (item: LostItem) => void
-  onEdit: (item: LostItem) => void
-  onDelete: (item: LostItem) => void
-  onHandover: (item: LostItem) => void
-  onDispatch: (item: LostItem) => void
-  onPrint: (item: LostItem) => void
+  items: LostItem[];
+  onView: (item: LostItem) => void;
+  onEdit: (item: LostItem) => void;
+  onDelete: (item: LostItem) => void;
+  onHandover: (item: LostItem) => void;
+  onDispatch: (item: LostItem) => void;
+  onPrint: (item: LostItem) => void;
   permissions: {
-    canEdit: boolean
-    canDelete: boolean
-    canHandover: boolean
-    canDispatch: boolean
-  }
+    canEdit: boolean;
+    canDelete: boolean;
+    canHandover: boolean;
+    canDispatch: boolean;
+  };
 }
 
 const statusStyles = {
-  stored: 'bg-primary/10 text-primary hover:bg-primary/10',
-  handed_over: 'bg-green-100 text-green-700 hover:bg-green-100',
-  dispatched: 'bg-blue-100 text-blue-700 hover:bg-blue-100',
-}
+  stored: "bg-primary/10 text-primary hover:bg-primary/10",
+  handed_over: "bg-green-100 text-green-700 hover:bg-green-100",
+  dispatched: "bg-blue-100 text-blue-700 hover:bg-blue-100",
+};
 
 const statusLabels = {
-  stored: 'Stored',
-  handed_over: 'Handed Over',
-  dispatched: 'Dispatched',
-}
+  stored: "Stored",
+  handed_over: "Handed Over",
+  dispatched: "Dispatched",
+};
 
 export function ItemsTable({
   items,
@@ -64,12 +72,14 @@ export function ItemsTable({
     return (
       <div className="text-center py-12 bg-card rounded-lg border">
         <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h3 className="text-lg font-medium text-foreground mb-1">No items found</h3>
+        <h3 className="text-lg font-medium text-foreground mb-1">
+          No items found
+        </h3>
         <p className="text-sm text-muted-foreground">
           Try adjusting your filters or add a new item.
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -89,13 +99,19 @@ export function ItemsTable({
         <TableBody>
           {items.map((item) => (
             <TableRow key={item.id} className="hover:bg-muted/30">
-              <TableCell className="font-medium text-primary">{item.code}</TableCell>
-              <TableCell>{format(new Date(item.dateFound), 'MMM dd, yyyy')}</TableCell>
-              <TableCell className="max-w-[200px] truncate">{item.itemDescription}</TableCell>
-              <TableCell>{item.category}</TableCell>
-              <TableCell>{item.guestName || '-'}</TableCell>
+              <TableCell className="font-medium text-primary">
+                {item.code}
+              </TableCell>
               <TableCell>
-                <Badge className={cn('font-medium', statusStyles[item.status])}>
+                {format(new Date(item.dateFound), "MMM dd, yyyy")}
+              </TableCell>
+              <TableCell className="max-w-[200px] truncate">
+                {item.itemDescription}
+              </TableCell>
+              <TableCell>{item.category}</TableCell>
+              <TableCell>{item.guestName || "-"}</TableCell>
+              <TableCell>
+                <Badge className={cn("font-medium", statusStyles[item.status])}>
                   {statusLabels[item.status]}
                 </Badge>
               </TableCell>
@@ -116,32 +132,32 @@ export function ItemsTable({
                       <Printer className="h-4 w-4 mr-2" />
                       Print
                     </DropdownMenuItem>
-                    
+
                     {permissions.canEdit && (
                       <DropdownMenuItem onClick={() => onEdit(item)}>
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
                     )}
-                    
-                    {item.status === 'stored' && permissions.canHandover && (
+
+                    {item.status === "stored" && permissions.canHandover && (
                       <DropdownMenuItem onClick={() => onHandover(item)}>
                         <HandHeart className="h-4 w-4 mr-2" />
                         Handover to Guest
                       </DropdownMenuItem>
                     )}
-                    
-                    {item.status === 'stored' && permissions.canDispatch && (
+
+                    {item.status === "stored" && permissions.canDispatch && (
                       <DropdownMenuItem onClick={() => onDispatch(item)}>
                         <Package className="h-4 w-4 mr-2" />
                         Dispatch
                       </DropdownMenuItem>
                     )}
-                    
+
                     {permissions.canDelete && (
                       <>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onDelete(item)}
                           className="text-destructive focus:text-destructive"
                         >
@@ -158,5 +174,5 @@ export function ItemsTable({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

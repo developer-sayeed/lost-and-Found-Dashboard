@@ -313,12 +313,14 @@ export default function ItemsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
+                  <TableHead className="font-semibold">Serial</TableHead>
                   <TableHead className="font-semibold">Code</TableHead>
                   <TableHead className="font-semibold">Date Found</TableHead>
                   <TableHead className="font-semibold">
                     Location Found
                   </TableHead>
                   <TableHead className="font-semibold">Item Name</TableHead>
+                  <TableHead className="font-semibold">Store</TableHead>
                   <TableHead className="font-semibold">Status</TableHead>
                   <TableHead className="font-semibold text-right">
                     Actions
@@ -326,8 +328,9 @@ export default function ItemsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item) => (
+                {items.map((item, index) => (
                   <TableRow key={item.id} className="hover:bg-muted/30">
+                    <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell className="font-medium">{item.code}</TableCell>
                     <TableCell>
                       {format(new Date(item.dateFound), "dd MMM yyyy")}
@@ -335,6 +338,9 @@ export default function ItemsPage() {
                     <TableCell>{item.locationFound || item.location}</TableCell>
                     <TableCell className="max-w-[250px] truncate">
                       {item.itemDescription}
+                    </TableCell>
+                    <TableCell className="max-w-[250px] truncate">
+                      {item.storeLocation}
                     </TableCell>
                     <TableCell>
                       <Badge
