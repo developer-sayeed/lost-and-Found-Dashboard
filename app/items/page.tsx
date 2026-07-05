@@ -217,16 +217,30 @@ export default function ItemsPage() {
             Showing {items.length} of {totalItems} items
           </p>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportExcel}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportExcel}
+              className="cursor-pointer"
+            >
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Excel
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExportCSV}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCSV}
+              className="cursor-pointer"
+            >
               <FileText className="h-4 w-4 mr-2" />
               CSV
             </Button>
             {permissions?.canAdd && (
-              <Button onClick={() => setAddModalOpen(true)} size="sm">
+              <Button
+                onClick={() => setAddModalOpen(true)}
+                size="sm"
+                className="cursor-pointer"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add New Item
               </Button>
@@ -292,7 +306,12 @@ export default function ItemsPage() {
 
           {/* Clear Filters */}
           {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="cursor-pointer"
+            >
               <X className="h-4 w-4 mr-1" />
               Clear
             </Button>
@@ -312,17 +331,29 @@ export default function ItemsPage() {
           <div className="border rounded-lg overflow-hidden bg-card">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="font-semibold">Serial</TableHead>
-                  <TableHead className="font-semibold">Code</TableHead>
-                  <TableHead className="font-semibold">Date Found</TableHead>
-                  <TableHead className="font-semibold">
+                <TableRow className="bg-[#403A60] hover:text-[#403A60] hover:bg-[#403A60]">
+                  <TableHead className="font-semibold text-amber-100">
+                    Serial
+                  </TableHead>
+                  <TableHead className="font-semibold text-amber-100">
+                    Code
+                  </TableHead>
+                  <TableHead className="font-semibold text-amber-100">
+                    Date Found
+                  </TableHead>
+                  <TableHead className="font-semibold text-amber-100">
                     Location Found
                   </TableHead>
-                  <TableHead className="font-semibold">Item Name</TableHead>
-                  <TableHead className="font-semibold">Store</TableHead>
-                  <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold text-right">
+                  <TableHead className="font-semibold text-amber-100">
+                    Item Name
+                  </TableHead>
+                  <TableHead className="font-semibold text-amber-100">
+                    Store
+                  </TableHead>
+                  <TableHead className="font-semibold text-amber-100">
+                    Status
+                  </TableHead>
+                  <TableHead className="font-semibold text-amber-100 text-right">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -353,6 +384,7 @@ export default function ItemsPage() {
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
                         <Button
+                          className="cursor-pointer"
                           variant="ghost"
                           size="icon"
                           onClick={() => handleView(item)}
@@ -362,6 +394,7 @@ export default function ItemsPage() {
                         </Button>
                         {permissions?.canEdit && item.status === "stored" && (
                           <Button
+                            className="cursor-pointer"
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(item)}
@@ -377,7 +410,7 @@ export default function ItemsPage() {
                               size="icon"
                               onClick={() => handleHandover(item)}
                               title="Handover"
-                              className="text-green-600 hover:text-green-700"
+                              className="text-green-600 cursor-pointer"
                             >
                               <HandHeart className="h-4 w-4" />
                             </Button>
@@ -389,12 +422,13 @@ export default function ItemsPage() {
                               size="icon"
                               onClick={() => handleDispatch(item)}
                               title="Dispatch"
-                              className="text-secondary hover:text-secondary/80"
+                              className="text-secondary  cursor-pointer"
                             >
                               <Truck className="h-4 w-4" />
                             </Button>
                           )}
                         <Button
+                          className="cursor-pointer"
                           variant="ghost"
                           size="icon"
                           onClick={() => handlePrint(item)}
@@ -408,7 +442,7 @@ export default function ItemsPage() {
                             size="icon"
                             onClick={() => handleDelete(item)}
                             title="Delete"
-                            className="text-destructive hover:text-destructive/80"
+                            className="text-destructive  cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

@@ -60,18 +60,30 @@ export function RecentItemsTable({
     <div className="border rounded-lg overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/50">
-            <TableHead className="font-semibold">Code</TableHead>
-            <TableHead className="font-semibold">Date Found</TableHead>
-            <TableHead className="font-semibold">Location</TableHead>
-            <TableHead className="font-semibold">Description</TableHead>
-            <TableHead className="font-semibold">Store Location</TableHead>
-            <TableHead className="font-semibold">Status</TableHead>
-            <TableHead className="font-semibold text-right">Actions</TableHead>
+          <TableRow className="bg-[#403A60] hover:text-[#403A60] hover:bg-[#403A60]">
+            <TableHead className="font-semibold text-amber-50 ">Code</TableHead>
+            <TableHead className="font-semibold text-amber-50">
+              Date Found
+            </TableHead>
+            <TableHead className="font-semibold text-amber-50">
+              Location
+            </TableHead>
+            <TableHead className="font-semibold text-amber-50">
+              Description
+            </TableHead>
+            <TableHead className="font-semibold text-amber-50">
+              Store Location
+            </TableHead>
+            <TableHead className="font-semibold text-amber-50">
+              Status
+            </TableHead>
+            <TableHead className="font-semibold text-amber-50 text-right">
+              Actions
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.map((item) => (
+          {items.slice(0, 5).map((item) => (
             <TableRow key={item.id} className="hover:bg-muted/30">
               <TableCell className="font-medium">{item.code}</TableCell>
               <TableCell>
@@ -95,6 +107,7 @@ export function RecentItemsTable({
               <TableCell>
                 <div className="flex items-center justify-end gap-1">
                   <Button
+                    className="cursor-pointer"
                     variant="ghost"
                     size="icon"
                     onClick={() => onView(item)}
@@ -104,6 +117,7 @@ export function RecentItemsTable({
                   </Button>
                   {permissions.canEdit && item.status === "stored" && (
                     <Button
+                      className="cursor-pointer"
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(item)}
@@ -118,7 +132,7 @@ export function RecentItemsTable({
                       size="icon"
                       onClick={() => onHandover(item)}
                       title="Handover"
-                      className="text-green-600 hover:text-green-700"
+                      className="text-green-600 cursor-pointer"
                     >
                       <HandHeart className="h-4 w-4" />
                     </Button>
@@ -129,12 +143,13 @@ export function RecentItemsTable({
                       size="icon"
                       onClick={() => onDispatch(item)}
                       title="Dispatch"
-                      className="text-secondary hover:text-secondary/80"
+                      className="text-secondary cursor-pointer"
                     >
                       <Truck className="h-4 w-4" />
                     </Button>
                   )}
                   <Button
+                    className="cursor-pointer"
                     variant="ghost"
                     size="icon"
                     onClick={() => onPrint(item)}
@@ -148,7 +163,7 @@ export function RecentItemsTable({
                       size="icon"
                       onClick={() => onDelete(item)}
                       title="Delete"
-                      className="text-destructive hover:text-destructive/80"
+                      className="text-destructive cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

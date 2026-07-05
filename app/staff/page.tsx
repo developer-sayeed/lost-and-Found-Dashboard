@@ -71,6 +71,9 @@ export default function StaffPage() {
   const [toggleStatusDialogOpen, setToggleStatusDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Check if current user is super admin
+  const isSuperAdmin = currentUser?.role === "super_admin";
+
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -102,19 +105,24 @@ export default function StaffPage() {
     total: users.length,
     active: users.filter((u) => u.isActive).length,
     admins: users.filter(
-      (u) => u.role === "super_admin" || u.role === "supervisor",
+      (u) =>
+        u.role === "super_admin" ||
+        u.role === "supervisor" ||
+        u.role === "manager",
     ).length,
-    employees: users.filter(
-      (u) => u.role === "employee" || u.role === "manager",
-    ).length,
+    employees: users.filter((u) => u.role === "employee").length,
   };
 
   const handleEdit = (user: User) => {
+    // Only super admin can edit
+    if (!isSuperAdmin) return;
     setSelectedUser(user);
     setEditModalOpen(true);
   };
 
   const handleToggleStatus = (user: User) => {
+    // Only super admin can toggle status
+    if (!isSuperAdmin) return;
     setSelectedUser(user);
     setToggleStatusDialogOpen(true);
   };
@@ -140,6 +148,8 @@ export default function StaffPage() {
   };
 
   const handleDelete = (user: User) => {
+    // Only super admin can delete
+    if (!isSuperAdmin) return;
     setSelectedUser(user);
     setDeleteDialogOpen(true);
   };
@@ -193,17 +203,17 @@ export default function StaffPage() {
     }
   };
 
-  if (!permissions?.canManageUsers) {
-    return (
-      <AppShell title="Staff Management">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
-            You do not have permission to access this page.
-          </p>
-        </div>
-      </AppShell>
-    );
-  }
+  // if (!permissions?.canManageUsers) {
+  //   return (
+  //     <AppShell title="Staff Management">
+  //       <div className="text-center py-12">
+  //         <p className="text-muted-foreground">
+  //           You do not have permission to access this page.
+  //         </p>
+  //       </div>
+  //     </AppShell>
+  //   );
+  // }
 
   return (
     <AppShell title="Staff Management">
@@ -241,9 +251,7 @@ export default function StaffPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.admins}</p>
-                <p className="text-sm text-muted-foreground">
-                  Admins/Supervisors
-                </p>
+                <p className="text-sm text-muted-foreground">Manager</p>
               </div>
             </CardContent>
           </Card>
@@ -254,9 +262,7 @@ export default function StaffPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.employees}</p>
-                <p className="text-sm text-muted-foreground">
-                  Managers/Employees
-                </p>
+                <p className="text-sm text-muted-foreground">Employees</p>
               </div>
             </CardContent>
           </Card>
@@ -272,10 +278,13 @@ export default function StaffPage() {
                   Manage your team members and their permissions
                 </CardDescription>
               </div>
-              <Button onClick={() => setAddModalOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Staff Member
-              </Button>
+              {/* Only super admin can add staff members */}
+              {isSuperAdmin && (
+                <Button onClick={() => setAddModalOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Staff Member
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent>
@@ -299,23 +308,35 @@ export default function StaffPage() {
               <div className="rounded-lg border overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-muted/50">
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Status</TableHead>
+                    <TableRow className="bg-[#403A60] hover:text-[#403A60] hover:bg-[#403A60]">
+                      <TableHead className=" text-amber-100">Serial</TableHead>
+                      <TableHead className=" text-amber-100">Name</TableHead>
+                      <TableHead className=" text-amber-100">User ID</TableHead>
+                      <TableHead className=" text-amber-100">Phone</TableHead>
+                      <TableHead className=" text-amber-100">
+                        Department
+                      </TableHead>
 
-                      <TableHead className="text-right">Actions</TableHead>
+                      {/* Role column - only visible to super admin */}
+                      {isSuperAdmin && <TableHead>Role</TableHead>}
+
+                      {/* Status column - only visible to super admin */}
+                      {isSuperAdmin && <TableHead>Status</TableHead>}
+
+                      {/* Actions column - only visible to super admin */}
+                      {isSuperAdmin && (
+                        <TableHead className="text-right">Actions</TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredUsers.map((user) => {
+                    {filteredUsers.map((user, index) => {
                       const isCurrentUser = user.id === currentUser?.id;
-                      const isSuperAdmin = user.role === "super_admin";
+                      const isUserSuperAdmin = user.role === "super_admin";
 
                       return (
                         <TableRow key={user.id} className="hover:bg-muted/30">
+                          <TableCell className="pl-4">{index + 1}</TableCell>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
                               <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
@@ -330,84 +351,93 @@ export default function StaffPage() {
                             </div>
                           </TableCell>
                           <TableCell>{user.email}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                "flex items-center gap-1 w-fit",
-                                getRoleBadgeStyle(user.role),
-                              )}
-                            >
-                              {getRoleIcon(user.role)}
-                              {ROLE_LABELS[user.role]}
-                            </Badge>
-                          </TableCell>
+                          <TableCell>{user.phone}</TableCell>
                           <TableCell>{user.department || "-"}</TableCell>
-                          <TableCell>
-                            <Badge
-                              className={
-                                user.isActive
-                                  ? "bg-green-100 text-green-700 hover:bg-green-100"
-                                  : "bg-red-100 text-red-700 hover:bg-red-100"
-                              }
-                            >
-                              {user.isActive ? "Active" : "Inactive"}
-                            </Badge>
-                          </TableCell>
+                          {isSuperAdmin && (
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "flex items-center gap-1 w-fit",
+                                  getRoleBadgeStyle(user.role),
+                                )}
+                              >
+                                {getRoleIcon(user.role)}
+                                {ROLE_LABELS[user.role]}
+                              </Badge>
+                            </TableCell>
+                          )}
+                          {/* Status column - only visible to super admin */}
+                          {isSuperAdmin && (
+                            <TableCell>
+                              <Badge
+                                className={
+                                  user.isActive
+                                    ? "bg-green-100 text-green-700 hover:bg-green-100"
+                                    : "bg-red-100 text-red-700 hover:bg-red-100"
+                                }
+                              >
+                                {user.isActive ? "Active" : "Inactive"}
+                              </Badge>
+                            </TableCell>
+                          )}
 
-                          <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                  <span className="sr-only">Open menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() => handleEdit(user)}
-                                >
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Edit
-                                </DropdownMenuItem>
-
-                                {!isCurrentUser && (
-                                  <DropdownMenuItem
-                                    onClick={() => handleToggleStatus(user)}
+                          {/* Actions column - only visible to super admin */}
+                          {isSuperAdmin && (
+                            <TableCell className="text-right">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
                                   >
-                                    {user.isActive ? (
-                                      <>
-                                        <UserX className="h-4 w-4 mr-2" />
-                                        Deactivate
-                                      </>
-                                    ) : (
-                                      <>
-                                        <UserCheck className="h-4 w-4 mr-2" />
-                                        Activate
-                                      </>
-                                    )}
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Open menu</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    onClick={() => handleEdit(user)}
+                                  >
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit
                                   </DropdownMenuItem>
-                                )}
 
-                                {!isCurrentUser && !isSuperAdmin && (
-                                  <>
-                                    <DropdownMenuSeparator />
+                                  {!isCurrentUser && (
                                     <DropdownMenuItem
-                                      onClick={() => handleDelete(user)}
-                                      className="text-destructive focus:text-destructive"
+                                      onClick={() => handleToggleStatus(user)}
                                     >
-                                      <Trash2 className="h-4 w-4 mr-2" />
-                                      Delete
+                                      {user.isActive ? (
+                                        <>
+                                          <UserX className="h-4 w-4 mr-2" />
+                                          Deactivate
+                                        </>
+                                      ) : (
+                                        <>
+                                          <UserCheck className="h-4 w-4 mr-2" />
+                                          Activate
+                                        </>
+                                      )}
                                     </DropdownMenuItem>
-                                  </>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
+                                  )}
+
+                                  {!isCurrentUser && !isUserSuperAdmin && (
+                                    <>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem
+                                        onClick={() => handleDelete(user)}
+                                        className="text-destructive focus:text-destructive"
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          )}
                         </TableRow>
                       );
                     })}
@@ -419,71 +449,78 @@ export default function StaffPage() {
         </Card>
       </div>
 
-      {/* Modals */}
-      <AddUserModal
-        open={addModalOpen}
-        onClose={() => setAddModalOpen(false)}
-        onSuccess={handleModalSuccess}
-      />
-      <EditUserModal
-        user={selectedUser}
-        open={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        onSuccess={handleModalSuccess}
-      />
+      {/* Modals - Only accessible to super admin */}
+      {isSuperAdmin && (
+        <>
+          <AddUserModal
+            open={addModalOpen}
+            onClose={() => setAddModalOpen(false)}
+            onSuccess={handleModalSuccess}
+          />
+          <EditUserModal
+            user={selectedUser}
+            open={editModalOpen}
+            onClose={() => setEditModalOpen(false)}
+            onSuccess={handleModalSuccess}
+          />
 
-      {/* Toggle Status Dialog */}
-      <AlertDialog
-        open={toggleStatusDialogOpen}
-        onOpenChange={setToggleStatusDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {selectedUser?.isActive ? "Deactivate" : "Activate"} User
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {selectedUser?.isActive
-                ? `Are you sure you want to deactivate ${selectedUser?.name}? They will no longer be able to log in.`
-                : `Are you sure you want to activate ${selectedUser?.name}? They will be able to log in again.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmToggleStatus}
-              disabled={isUpdating}
-            >
-              {isUpdating && <Spinner className="h-4 w-4 mr-2" />}
-              {selectedUser?.isActive ? "Deactivate" : "Activate"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          {/* Toggle Status Dialog */}
+          <AlertDialog
+            open={toggleStatusDialogOpen}
+            onOpenChange={setToggleStatusDialogOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {selectedUser?.isActive ? "Deactivate" : "Activate"} User
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {selectedUser?.isActive
+                    ? `Are you sure you want to deactivate ${selectedUser?.name}? They will no longer be able to log in.`
+                    : `Are you sure you want to activate ${selectedUser?.name}? They will be able to log in again.`}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={confirmToggleStatus}
+                  disabled={isUpdating}
+                >
+                  {isUpdating && <Spinner className="h-4 w-4 mr-2" />}
+                  {selectedUser?.isActive ? "Deactivate" : "Activate"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
-      {/* Delete Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete {selectedUser?.name}? This action
-              cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={isUpdating}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {isUpdating && <Spinner className="h-4 w-4 mr-2" />}
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          {/* Delete Dialog */}
+          <AlertDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete User</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete {selectedUser?.name}? This
+                  action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={confirmDelete}
+                  disabled={isUpdating}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  {isUpdating && <Spinner className="h-4 w-4 mr-2" />}
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
+      )}
     </AppShell>
   );
 }

@@ -42,13 +42,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       label: "Pending Dispatch",
       href: "/pending-dispatch",
       icon: Clock,
-      show: permissions?.canDispatch,
+      // show: permissions?.canDispatch,
+      show: true,
     },
     {
       label: "Staff Management",
       href: "/staff",
       icon: Users,
-      show: permissions?.canManageUsers,
+      show: true,
+      // show: permissions?.canManageUsers,
     },
     {
       label: "Settings",

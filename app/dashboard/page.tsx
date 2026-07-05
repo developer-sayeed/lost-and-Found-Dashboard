@@ -1,124 +1,132 @@
-'use client'
+"use client";
 
-import { useState, useCallback, useEffect } from 'react'
-import Link from 'next/link'
-import { AppShell } from '@/components/layout/app-shell'
-import { StatsCard } from '@/components/dashboard/stats-card'
-import { DashboardCharts } from '@/components/dashboard/dashboard-charts'
-import { RecentItemsTable } from '@/components/dashboard/recent-items-table'
-import { ViewDetailsModal } from '@/components/modals/view-details-modal'
-import { AddItemModal } from '@/components/modals/add-item-modal'
-import { EditItemModal } from '@/components/modals/edit-item-modal'
-import { HandoverModal } from '@/components/modals/handover-modal'
-import { DispatchConfirmModal } from '@/components/modals/dispatch-confirm-modal'
-import { DeleteConfirmModal } from '@/components/modals/delete-confirm-modal'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/components/auth/auth-provider'
-import type { LostItem, HotelSettings } from '@/lib/types'
-import { Package, Clock, HandHeart, Truck, Plus, ArrowRight } from 'lucide-react'
+import { useState, useCallback, useEffect } from "react";
+import Link from "next/link";
+import { AppShell } from "@/components/layout/app-shell";
+import { StatsCard } from "@/components/dashboard/stats-card";
+import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
+import { RecentItemsTable } from "@/components/dashboard/recent-items-table";
+import { ViewDetailsModal } from "@/components/modals/view-details-modal";
+import { AddItemModal } from "@/components/modals/add-item-modal";
+import { EditItemModal } from "@/components/modals/edit-item-modal";
+import { HandoverModal } from "@/components/modals/handover-modal";
+import { DispatchConfirmModal } from "@/components/modals/dispatch-confirm-modal";
+import { DeleteConfirmModal } from "@/components/modals/delete-confirm-modal";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/components/auth/auth-provider";
+import type { LostItem, HotelSettings } from "@/lib/types";
+import {
+  Package,
+  Clock,
+  HandHeart,
+  Truck,
+  Plus,
+  ArrowRight,
+} from "lucide-react";
 
 interface StatsData {
-  total: number
-  stored: number
-  handedOver: number
-  dispatched: number
-  pendingDispatch: number
-  statusData: { name: string; value: number; status: string }[]
-  categoryData: { name: string; value: number }[]
+  total: number;
+  stored: number;
+  handedOver: number;
+  dispatched: number;
+  pendingDispatch: number;
+  statusData: { name: string; value: number; status: string }[];
+  categoryData: { name: string; value: number }[];
 }
 
 export default function DashboardPage() {
-  const { permissions } = useAuth()
-  const [recentItems, setRecentItems] = useState<LostItem[]>([])
-  const [stats, setStats] = useState<StatsData | null>(null)
-  const [settings, setSettings] = useState<HotelSettings | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { permissions } = useAuth();
+  const [recentItems, setRecentItems] = useState<LostItem[]>([]);
+  const [stats, setStats] = useState<StatsData | null>(null);
+  const [settings, setSettings] = useState<HotelSettings | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Modal states
-  const [selectedItem, setSelectedItem] = useState<LostItem | null>(null)
-  const [viewModalOpen, setViewModalOpen] = useState(false)
-  const [addModalOpen, setAddModalOpen] = useState(false)
-  const [editModalOpen, setEditModalOpen] = useState(false)
-  const [handoverModalOpen, setHandoverModalOpen] = useState(false)
-  const [dispatchModalOpen, setDispatchModalOpen] = useState(false)
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<LostItem | null>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [handoverModalOpen, setHandoverModalOpen] = useState(false);
+  const [dispatchModalOpen, setDispatchModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
-      setIsLoading(true)
-      
+      setIsLoading(true);
+
       // Fetch stats
-      const statsRes = await fetch('/api/stats')
-      const statsData = await statsRes.json()
-      setStats(statsData)
-      
+      const statsRes = await fetch("/api/stats");
+      const statsData = await statsRes.json();
+      setStats(statsData);
+
       // Fetch recent 10 items
-      const itemsRes = await fetch('/api/items?recent=true')
-      const itemsData = await itemsRes.json()
-      setRecentItems(itemsData.items || [])
-      
+      const itemsRes = await fetch("/api/items?recent=true");
+      const itemsData = await itemsRes.json();
+      setRecentItems(itemsData.items || []);
+
       // Fetch settings
-      const settingsRes = await fetch('/api/settings')
-      const settingsData = await settingsRes.json()
-      setSettings(settingsData)
+      const settingsRes = await fetch("/api/settings");
+      const settingsData = await settingsRes.json();
+      setSettings(settingsData);
     } catch (error) {
-      console.error('Error loading data:', error)
+      console.error("Error loading data:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    loadData()
-  }, [loadData])
+    loadData();
+  }, [loadData]);
 
   // Handlers
   const handleView = (item: LostItem) => {
-    setSelectedItem(item)
-    setViewModalOpen(true)
-  }
+    setSelectedItem(item);
+    setViewModalOpen(true);
+  };
 
   const handleEdit = (item: LostItem) => {
-    setSelectedItem(item)
-    setEditModalOpen(true)
-  }
+    setSelectedItem(item);
+    setEditModalOpen(true);
+  };
 
   const handleDelete = (item: LostItem) => {
-    setSelectedItem(item)
-    setDeleteModalOpen(true)
-  }
+    setSelectedItem(item);
+    setDeleteModalOpen(true);
+  };
 
   const handleHandover = (item: LostItem) => {
-    setSelectedItem(item)
-    setHandoverModalOpen(true)
-  }
+    setSelectedItem(item);
+    setHandoverModalOpen(true);
+  };
 
   const handleDispatch = (item: LostItem) => {
-    setSelectedItem(item)
-    setDispatchModalOpen(true)
-  }
+    setSelectedItem(item);
+    setDispatchModalOpen(true);
+  };
 
   const handlePrint = async (item: LostItem) => {
-    if (!settings) return
-    const { generateItemPDF, generateHandoverPDF } = await import('@/lib/pdf-generator.client')
-    if (item.status === 'handed_over') {
-      await generateHandoverPDF(item, settings)
+    if (!settings) return;
+    const { generateItemPDF, generateHandoverPDF } =
+      await import("@/lib/pdf-generator.client");
+    if (item.status === "handed_over") {
+      await generateHandoverPDF(item, settings);
     } else {
-      await generateItemPDF(item, settings)
+      await generateItemPDF(item, settings);
     }
-  }
+  };
 
   const handleModalSuccess = () => {
-    loadData()
-    setViewModalOpen(false)
-    setAddModalOpen(false)
-    setEditModalOpen(false)
-    setHandoverModalOpen(false)
-    setDispatchModalOpen(false)
-    setDeleteModalOpen(false)
-    setSelectedItem(null)
-  }
+    loadData();
+    setViewModalOpen(false);
+    setAddModalOpen(false);
+    setEditModalOpen(false);
+    setHandoverModalOpen(false);
+    setDispatchModalOpen(false);
+    setDeleteModalOpen(false);
+    setSelectedItem(null);
+  };
 
   if (isLoading) {
     return (
@@ -127,7 +135,7 @@ export default function DashboardPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
       </AppShell>
-    )
+    );
   }
 
   return (
@@ -163,27 +171,33 @@ export default function DashboardPage() {
 
         {/* Charts */}
         {stats && stats.statusData.length > 0 && (
-          <DashboardCharts 
-            statusData={stats.statusData} 
-            categoryData={stats.categoryData} 
+          <DashboardCharts
+            statusData={stats.statusData}
+            categoryData={stats.categoryData}
           />
         )}
 
         {/* Recent Items */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg font-semibold">Recent Items</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Recent Items
+            </CardTitle>
             <div className="flex items-center gap-2">
               {permissions?.canAdd && (
-                <Button onClick={() => setAddModalOpen(true)} size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button
+                  onClick={() => setAddModalOpen(true)}
+                  size="sm"
+                  className="cursor-pointer"
+                >
+                  <Plus className="h-4 w-4 mr-2 " />
                   Add New Item
                 </Button>
               )}
               <Link href="/items">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="cursor-pointer">
                   View All
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  <ArrowRight className="h-4 w-4 ml-2 " />
                 </Button>
               </Link>
             </div>
@@ -244,5 +258,5 @@ export default function DashboardPage() {
         onSuccess={handleModalSuccess}
       />
     </AppShell>
-  )
+  );
 }

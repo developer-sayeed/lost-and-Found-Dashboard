@@ -26,7 +26,9 @@ export function Header({ onMenuClick, title = "Dashboard" }: HeaderProps) {
       </Button>
 
       <div className="flex-1">
-        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
+        <h1 className="text-xl font-semibold text-foreground">
+          Warwick Hotel Baha - {title}
+        </h1>
       </div>
 
       <div className="flex items-center gap-3 pl-0 sm:pl-4 sm:border-l">
@@ -35,9 +37,9 @@ export function Header({ onMenuClick, title = "Dashboard" }: HeaderProps) {
           <p className="text-sm font-medium truncate max-w-[120px] sm:max-w-none">
             {user?.name}
           </p>
-          <p className="text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-none">
+          {/* <p className="text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-none">
             {user?.role ? ROLE_LABELS[user.role] : ""}
-          </p>
+          </p> */}
         </div>
 
         {/* Avatar */}
