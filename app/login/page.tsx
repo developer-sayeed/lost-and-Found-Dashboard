@@ -61,7 +61,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#343759] p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto mb-4">
@@ -75,7 +75,7 @@ export default function LoginPage() {
             />
           </div>
           <CardTitle className="text-2xl font-semibold text-primary">
-            Lost & Found System
+            Hotel Lost & Found System
           </CardTitle>
           <CardDescription>Sign in to your account to continue</CardDescription>
         </CardHeader>
@@ -138,6 +138,10 @@ export default function LoginPage() {
                 )}
                 Sign In
               </Button>
+
+              <p className="text-center">
+                If you user id or forgot Password contact Administrator
+              </p>
             </FieldGroup>
           </form>
         </CardContent>
