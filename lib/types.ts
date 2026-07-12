@@ -8,6 +8,8 @@ export type ItemCategory =
   | "Documents"
   | "Jewelry"
   | "Bags"
+  | "Foods"
+  | "Medicines"
   | "Personal Items"
   | "Other";
 
@@ -37,6 +39,8 @@ export interface User {
 }
 
 export interface LostItem {
+  dispatchedBy: string | undefined;
+  dispatchedDate: string | undefined;
   dispatchDeadline: any;
   locationFound: string;
   id: string;

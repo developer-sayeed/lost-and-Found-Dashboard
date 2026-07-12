@@ -55,11 +55,19 @@ import {
   Shield,
   ShieldCheck,
   User as UserIcon,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function StaffPage() {
+  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [visiblePasswordId, setVisiblePasswordId] = useState<string | null>(
+    null,
+  );
   const { user: currentUser, permissions } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -190,6 +198,21 @@ export default function StaffPage() {
     }
   };
 
+  const handlePasswordToggle = (userId: string) => {
+    // যদি একই password আবার click করে
+    if (visiblePasswordId === userId) {
+      setVisiblePasswordId(null);
+      return;
+    }
+
+    // নতুন password show করুন
+    setVisiblePasswordId(userId);
+
+    // 10 second পরে auto hide
+    setTimeout(() => {
+      setVisiblePasswordId((current) => (current === userId ? null : current));
+    }, 10000);
+  };
   const getRoleBadgeStyle = (role: string) => {
     switch (role) {
       case "super_admin":
@@ -318,14 +341,28 @@ export default function StaffPage() {
                       </TableHead>
 
                       {/* Role column - only visible to super admin */}
-                      {isSuperAdmin && <TableHead>Role</TableHead>}
+                      {isSuperAdmin && (
+                        <TableHead className=" text-amber-100">Role</TableHead>
+                      )}
+                      {/* Role column - only visible to super admin */}
+                      {isSuperAdmin && (
+                        <TableHead className=" text-amber-100">
+                          Password
+                        </TableHead>
+                      )}
 
                       {/* Status column - only visible to super admin */}
-                      {isSuperAdmin && <TableHead>Status</TableHead>}
+                      {isSuperAdmin && (
+                        <TableHead className=" text-amber-100">
+                          Status
+                        </TableHead>
+                      )}
 
                       {/* Actions column - only visible to super admin */}
                       {isSuperAdmin && (
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="text-right text-amber-100">
+                          Actions
+                        </TableHead>
                       )}
                     </TableRow>
                   </TableHeader>
@@ -353,6 +390,7 @@ export default function StaffPage() {
                           <TableCell>{user.email}</TableCell>
                           <TableCell>{user.phone}</TableCell>
                           <TableCell>{user.department || "-"}</TableCell>
+                          {/* Admin Can be access Roles */}
                           {isSuperAdmin && (
                             <TableCell>
                               <Badge
@@ -365,6 +403,30 @@ export default function StaffPage() {
                                 {getRoleIcon(user.role)}
                                 {ROLE_LABELS[user.role]}
                               </Badge>
+                            </TableCell>
+                          )}
+
+                          {/* Admin Can access Password */}
+                          {isSuperAdmin && (
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <span>
+                                  {visiblePasswordId === user.id
+                                    ? user.password
+                                    : "••••••••"}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handlePasswordToggle(user.id)}
+                                >
+                                  {visiblePasswordId === user.id ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
+                                </button>
+                              </div>
                             </TableCell>
                           )}
                           {/* Status column - only visible to super admin */}

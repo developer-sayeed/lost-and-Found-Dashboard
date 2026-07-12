@@ -95,7 +95,7 @@ export default function ItemsPage() {
 
   // Generate year options (last 5 years)
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 5 }, (_, i) => ({
+  const yearOptions = Array.from({ length: 3 }, (_, i) => ({
     value: String(currentYear - i),
     label: String(currentYear - i),
   }));
@@ -269,7 +269,7 @@ export default function ItemsPage() {
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="stored">Stored</SelectItem>
-              <SelectItem value="handed_over">Handed Over</SelectItem>
+              <SelectItem value="handed_over">Handover</SelectItem>
               <SelectItem value="dispatched">Dispatched</SelectItem>
             </SelectContent>
           </Select>
