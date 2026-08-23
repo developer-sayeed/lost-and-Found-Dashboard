@@ -169,7 +169,7 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Charts */}
+        {/* Charts */}      
         {stats && stats.statusData.length > 0 && (
           <DashboardCharts
             statusData={stats.statusData}

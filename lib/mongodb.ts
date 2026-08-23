@@ -31,7 +31,7 @@ export async function connectToDatabase(): Promise<{
     return { client: cachedClient, db: cachedDb };
   }
 
-  // Create new connection
+  // Create new connection for database
   const client = await MongoClient.connect(MONGODB_URI);
 
   const db = client.db("lost_and_found");
